@@ -1,31 +1,71 @@
 # opencv_animal_tracking
 
-Initially for desktop version, currently working on extending it to Android, will post code soon.
+This is the desktop version. For the Android version, see separate repository.
 
-## Prerequisites
+## Installation on Ubuntu 16.04
 
-* OS - in theory, should work with any OS that has the following requirements installed, but has been tested only on MacOS X (High Sierra), Ubuntu 16.04 and Lubuntu 17.04 so far
-* Python 2.7 
-* Opencv for python - this is complicated, do **exactly** as below
-  * First install opencv 3.3.0 as described here: http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html (install with opencv-contrib, and make sure to run `cmake`/`cmake-gui` with option `WITH_FFMPEG=TRUE`)
-  * From the resultant build/lib/ folder, copy cv2.so to your python site-packages/cv2 folder, e.g.: `cp ~/bin/opencv/build/lib/cv2.so ~/.local/lib/python2.7/site-packages/cv2/`
-* Ffmpeg - `sudo apt-get install ffmpeg`
-* Pandas, Numpy - `pip install numpy matplotlib pandas`
+### Docker container (Ubuntu 16.04, opencv 3.2.0 with ffmpeg)
+The easiest way to run this software is through a Docker container. Once you have [installed Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce-1), retrieve the AnimApp container from the public repository on Docker Hub as follows (may require `sudo` permissions depending on your Docker installation):
+```
+docker pull sraorao/docker-python2-opencv-ffmpeg-animapp:initial
+```
+Following this, run the container as follows:
+```
+xhost +
+docker run --tty --interactive --network=host --env DISPLAY=$DISPLAY --volume $XAUTH:/root/.Xauthority -it srao/docker-python2-opencv-ffmpeg-animapp:initial
+```
 
+### Manual installation for opencv 3.2.0
+
+```
+# Install all dependencies for OpenCV 3.2
+apt-get -y update && apt-get -y install python2.7-dev wget unzip \
+    build-essential cmake git pkg-config libatlas-base-dev gfortran \
+    libjasper-dev libgtk2.0-dev libavcodec-dev libavformat-dev \
+    libswscale-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libv4l-dev \
+    && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip install numpy\
+    && wget https://github.com/Itseez/opencv/archive/3.2.0.zip -O opencv3.zip \
+    && unzip -q opencv3.zip && mv /opencv-3.2.0 /opencv && rm opencv3.zip \
+    && wget https://github.com/Itseez/opencv_contrib/archive/3.2.0.zip -O opencv_contrib3.zip \
+    && unzip -q opencv_contrib3.zip && mv /opencv_contrib-3.2.0 /opencv_contrib && rm opencv_contrib3.zip \
+
+    # prepare build
+    && mkdir /opencv/build && cd /opencv/build \
+    && cmake -D CMAKE_BUILD_TYPE=RELEASE \
+      -D BUILD_PYTHON_SUPPORT=ON \
+      -D CMAKE_INSTALL_PREFIX=/usr/local \
+      -D OPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
+      -D BUILD_EXAMPLES=OFF \
+      -D WITH_IPP=OFF \
+      -D WITH_FFMPEG=ON \
+      -D WITH_V4L=ON .. \
+
+    # install
+    && cd /opencv/build && make -j$(nproc) && make install && ldconfig \
+    && cd /home/ && git clone https://github.com/sraorao/animapp_desktop && mkdir /home/data
+```
+* Install Pandas, Numpy python packages - `pip install numpy matplotlib pandas`
+
+Either with Docker or manual installation, run AnimApp scripts (located in the `/home/animapp_desktop` folder) as follows:
+```
+python /home/animapp_desktop/set_thresholds_v5.py -f /home/animapp_desktop/sample_videos/VID_20180408_193620.mp4
+python /home/animapp_desktop/opencv_colour_tracking_v12.py -f /home/animapp_desktop/sample_videos/cut_video.mp4 -dw -l 0 0 0 -u 180 255 40 -r 5 -m 3
+```
 ## Installation on MacOS (High Sierra)
 Installation on MacOS is very simple, but Homebrew must be installed on the Mac. [See here for instructions.](https://brew.sh/)
 Enter the following in the terminal (command + T) after Homebrew is installed.
-* `brew install ffmpeg`
-* `brew install opencv --with-contrib --with-ffmpeg`
-* `git clone "https://github.com/sraorao/opencv_animal_tracking"`
-
+```
+brew install ffmpeg
+brew install opencv --with-contrib --with-ffmpeg
+git clone "https://github.com/sraorao/opencv_animal_tracking"
+```
 ## Usage
 
 ### Pre-processing (get region of interest coordinates, hsv threshold values)
 
 #### Commandline arguments
 ```
-usage: set_thresholds_v5.py [-h] [-p PATH] [-f FILE]
+python set_thresholds_v5.py [-h] [-p PATH] [-f FILE]
 
 Accessory tool to set thresholding limits; esc or q to quit, p to print
 current hsv limits to terminal.
@@ -45,7 +85,7 @@ optional arguments:
 
 #### Commandline arguments
 ```
-usage: opencv_colour_tracking_v11.py [-h] [-p PATH] [-f FILE]
+python opencv_colour_tracking_v11.py [-h] [-p PATH] [-f FILE]
                                      [-l LOWER LOWER LOWER]
                                      [-u UPPER UPPER UPPER]
                                      [-l2 LOWER2 LOWER2 LOWER2]
@@ -113,7 +153,7 @@ optional arguments:
 
 #### Commandline arguments
 ```
-usage: process_csv.py [-h] [-f FILE] [-o OUTPUT]
+python process_csv.py [-h] [-f FILE] [-o OUTPUT]
 
 optional arguments:
   -h, --help            show this help message and exit
