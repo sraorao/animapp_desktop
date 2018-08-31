@@ -90,7 +90,7 @@ while(ret):
     mask = cv2.inRange(hsv, np.array([lh, ls, lv]), np.array([uh, us, uv]))
     cv2.imshow('image', mask)
     if operating_sys == "Darwin":
-        k = cv2.waitkey(20)
+        k = cv2.waitKey(20)
     else:
         k = cv2.waitKey(1) & 0xFF
     if k == 27 or k == 113:
