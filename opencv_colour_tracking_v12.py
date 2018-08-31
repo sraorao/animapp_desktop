@@ -196,7 +196,7 @@ def analyse_vid(inputfilename):
 	count = count + 1
         time.sleep(args.delay)
         if operating_sys == "Darwin": # on MacOS
-            key = cv2.waitkey(20)
+            key = cv2.waitKey(20)
         else: # Windows and Linux
             key = cv2.waitKey(1) & 0xFF
 
