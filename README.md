@@ -57,7 +57,7 @@ Enter the following in the terminal (command + T) after Homebrew is installed.
 ```
 brew install ffmpeg
 brew install opencv --with-contrib --with-ffmpeg
-git clone "https://github.com/sraorao/opencv_animal_tracking"
+git clone "https://github.com/sraorao/animapp_desktop"
 ```
 ## Usage
 
