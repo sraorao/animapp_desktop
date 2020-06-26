@@ -1,4 +1,5 @@
-# opencv_animal_tracking
+# Animapp
+## The desktop app has undergone a major revamp and all documentation is now here: https://animapp.readthedocs.io/en/latest/index.html . The following instructions may still work for python2 systems, but but are deprecated. The latest version available on Conda is easier to install and use, so please try that if you are starting out with Animapp!
 
 This is the desktop version. For the Android version, see separate repository.
 
